@@ -123,6 +123,7 @@ export default {
 
 .vbta-input {
   background-color: transparent;
+  box-shadow: none;
 }
 
 .vbta-menu.visible {
