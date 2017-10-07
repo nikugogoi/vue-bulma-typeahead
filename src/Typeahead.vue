@@ -7,7 +7,8 @@
       type="text" 
       @keyup.delete="selected = false" 
       :class="{'is-danger': error}"
-      @focusout="selected=true">
+      @focusout="outfocus.input='why'"
+    >
     <div :class="['vbta-menu', { visible: matches.length && !selected }]">
       <ul>
         <li v-for="match in matches" class="vbta-suggestion" @click="emitSelect(match)">
@@ -67,10 +68,21 @@ export default {
       matches: [],
       hint: '',
       selected: false,
-      is_first: false
+      is_first: false,
+      outfocus:{
+        input: false,
+        suggestion: false
+      }
     }
   },
   watch: {
+    outfocus:{
+      handler: function(n){
+        /*if(n.input==true&&n.suggestion==true)
+          this.selected=true*/
+        //n.input=n.suggestion=false
+      }
+    },
     prefill: function(){
       if(this.prefill!=null)
         this.query=this.prefill  
@@ -91,6 +103,7 @@ export default {
   },
   methods: {
     emitSelect (value) {
+      //console.log("emiting")
       value = value.replace(/<[\/]?strong>/gm, '')
       this.selected = true
       this.query = value
