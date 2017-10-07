@@ -56,15 +56,14 @@ export default {
       default: false,
       required: false
     },
-    query: {
-      type: String,
-      default: '',
+    prefill: {
+      default: null,
       required: false
     }
   },
   data () {
     return {
-      //query: '',
+      query: '',
       matches: [],
       hint: '',
       selected: false,
@@ -72,6 +71,10 @@ export default {
     }
   },
   watch: {
+    prefill: function(){
+      if(this.prefill!=null)
+        this.query=this.prefill  
+    },
     query: function (value) {
       if(value=="")
         this.is_first=true
