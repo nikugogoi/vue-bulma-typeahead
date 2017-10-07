@@ -1,7 +1,7 @@
 <template>
   <span class="vbta">
     <input :class="['input', 'vbta-hint', { visible: matches.length }]" type="text" :value="hint" readonly>
-    <input v-model="query" class="input vbta-input" type="text" @keyup.delete="selected = false">
+    <input v-model="query" class="input vbta-input" type="text" @keyup.delete="selected = false" :class="{'is-danger': error}">
     <div :class="['vbta-menu', { visible: matches.length && !selected }]">
       <ul>
         <li v-for="match in matches" class="vbta-suggestion" @click="emitSelect(match)">
@@ -44,11 +44,21 @@ export default {
       type: Boolean,
       default: true,
       required: false
+    },
+    error: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    query: {
+      type: String,
+      default: '',
+      required: false
     }
   },
   data () {
     return {
-      query: '',
+      //query: '',
       matches: [],
       hint: '',
       selected: false
