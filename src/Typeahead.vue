@@ -1,7 +1,13 @@
 <template>
   <span class="vbta">
-    <input :class="['input', 'vbta-hint', { visible: matches.length }]" type="text" :value="hint" readonly>
-    <input v-model="query" class="input vbta-input" type="text" @keyup.delete="selected = false" :class="{'is-danger': error}">
+    <input :class="['input', 'vbta-hint', { visible: matches.length && !selected }]" type="text" :value="hint" readonly>
+    <input 
+      v-model="query" 
+      class="input vbta-input" 
+      type="text" 
+      @keyup.delete="selected = false" 
+      :class="{'is-danger': error}"
+      @focusout="selected=true">
     <div :class="['vbta-menu', { visible: matches.length && !selected }]">
       <ul>
         <li v-for="match in matches" class="vbta-suggestion" @click="emitSelect(match)">
@@ -61,17 +67,23 @@ export default {
       //query: '',
       matches: [],
       hint: '',
-      selected: false
+      selected: false,
+      is_first: false
     }
   },
   watch: {
     query: function (value) {
-      if (this.async) {
-        debounce(this.getMatches, 150)(value)
-      } else {
-        this.getMatches(value)
+      if(value=="")
+        this.is_first=true
+      if(this.is_first==true)  
+      {  if (this.async) {
+          debounce(this.getMatches, 150)(value)
+        } else {
+          this.getMatches(value)
+        }
+        this.onChange(value, this.name)
       }
-      this.onChange(value, this.name)
+      this.is_first=true
     }
   },
   methods: {
@@ -185,11 +197,15 @@ export default {
 .vbta-hint {
   color: #999;
   position: absolute;
+  display: none;
   top: 0px;
   left: 0px;
   border-color: transparent;
   box-shadow: none;
   opacity: 1;
   background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);
+}
+.vbta-hint.visible{
+  display: inline-block;
 }
 </style>
