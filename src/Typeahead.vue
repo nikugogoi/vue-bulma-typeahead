@@ -4,7 +4,8 @@
     <input 
       v-model="query" 
       class="input vbta-input" 
-      type="text" 
+      type="text"
+      @focus="$emit('hocus')"
       @keyup.delete="selected = false" 
       :class="{'is-danger': error}"
       @focusout="outfocus.input='why'"
