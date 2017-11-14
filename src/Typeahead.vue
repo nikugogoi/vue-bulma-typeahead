@@ -199,7 +199,7 @@ export default {
   font-weight: normal;
   line-height: 1.42857143;
   color: #333333;
-  white-space: nowrap;
+  /*white-space: nowrap;*/
 }
 
 .vbta-suggestion:hover,
