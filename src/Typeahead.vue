@@ -1,6 +1,7 @@
 <template>
-  <span class="vbta">
+  <span class="vbta" :class="{'vbta-suggest': matches.length && !selected}">
     <input :class="['input', 'vbta-hint', { visible: matches.length && !selected }]" type="text" :value="hint" readonly>
+    </input>
     <input 
       v-model="query" 
       class="input vbta-input" 
@@ -13,12 +14,12 @@
       :class="{'is-danger': error}"
       @focusout="outfocus.input='why'"
     >
-    <div :class="['vbta-menu', { visible: matches.length && !selected }]">
-      <ul>
-        <li v-for="match in matches" class="vbta-suggestion" @click="emitSelect(match)">
-          <span v-html="match"></span>
-        </li>
-      </ul>
+    <div :class="['vbta-menu', { visible: matches.length && !selected }]" class="suggestion-box"> 
+        <ul>
+          <li v-for="match in matches" class="vbta-suggestion" @click="emitSelect(match)">
+            <span v-html="match"></span>
+          </li>
+        </ul>
     </div>
   </span>
 </template>
@@ -69,6 +70,10 @@ export default {
       type: String,
       default() { return '' },
       required: false
+    },
+    trigger: {
+      default: ()=>{return true},
+      required: false
     }
   },
   data () {
@@ -101,12 +106,16 @@ export default {
     query: function (value) {
       if(value=="")
         this.is_first=true
-      if(this.is_first==true)  
-      {  if (this.async) {
+      if(this.is_first==true && this.trigger(value))  
+      { if (this.async) {
           debounce(this.getMatches, 150)(value)
         } else {
           this.getMatches(value)
         }
+        this.onChange(value, this.name)
+      }
+      else
+      { this.getMatches("")
         this.onChange(value, this.name)
       }
       this.is_first=true
@@ -121,27 +130,38 @@ export default {
     handleKeyUp () {
       if (this.matches && this.preselected != 0) {
         this.preselected--
-        let el = $('.vbta-suggestion').get(this.preselected)
+        let el = document.getElementsByClassName("vbta-suggestion")[this.preselected]
+        el.style['background-color'] = '#00d1b2'
+        let prev = document.getElementsByClassName("vbta-suggestion")[this.preselected + 1]
+        prev.style['background-color'] = '#ffffff'
+        /*let el = $('.vbta-suggestion').get(this.preselected)
         $(el).css('background-color', '#00d1b2')
-
+        
         let prev = $('.vbta-suggestion').get(this.preselected + 1)
-        $(prev).css('background-color', '#ffffff')
+        $(prev).css('background-color', '#ffffff')*/
       }
     },
     handleKeyDown () {
+
       if (this.matches && this.preselected != this.matches.length - 1) {
         if (!this.firstTouch) {
           this.preselected++
         } else {
           this.firstTouch = false
         }
-        let el = $('.vbta-suggestion').get(this.preselected)
+        let el = document.getElementsByClassName("vbta-suggestion")[this.preselected]
+        el.style['background-color'] = '#00d1b2'
+        if (this.preselected != 0) {
+          let prev = document.getElementsByClassName("vbta-suggestion")[this.preselected - 1]
+          prev.style['background-color'] = '#ffffff'
+        }
+        /*let el = $('.vbta-suggestion').get(this.preselected)
         $(el).css('background-color', '#00d1b2')
 
         if (this.preselected != 0) {
           let prev = $('.vbta-suggestion').get(this.preselected - 1)
           $(prev).css('background-color', '#ffffff')
-        }
+        }*/
       }
     },
     emitSelect (value) {
@@ -193,8 +213,20 @@ export default {
 
 <style lang="scss" scoped>
 @import "~bulma/sass/utilities/_all";
-@import "~bulma/sass/elements/form.sass";
-
+//@import "~bulma/sass/elements/form.sass";
+.suggestion-box {
+  max-height: 10rem;
+  overflow: auto;
+  @include overflow-touch;
+}
+.suggestion-box::-webkit-scrollbar {
+    display: block;
+    width: 5px;
+}
+.suggestion-box::-webkit-scrollbar-thumb {
+    background: $dark;
+    border-radius: 20%;
+}
 .vbta {
   width: 100%;
   position: relative;
@@ -212,19 +244,19 @@ export default {
 
 .vbta-menu {
   position: absolute;
-  width: 100%;
+  width: 160%;
   top: 100%;
-  left: 0;
-  z-index: 1000;
+  right: 0;
+  z-index: 9;
   display: none;
-  float: left;
+  float: right;
   min-width: 160px;
   padding: 5px 0;
-  margin: 2px 0 0;
+  margin: 5px 0 0;
   list-style: none;
   font-size: 14px;
   text-align: left;
-  background-color: #ffffff;
+  background-color: #f0f0f0;
   border: 1px solid #cccccc;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 4px;
@@ -232,7 +264,6 @@ export default {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   background-clip: padding-box;
 }
-
 .vbta-suggestion {
   display: block;
   padding: 3px 20px;
@@ -243,8 +274,8 @@ export default {
   /*white-space: nowrap;*/
 }
 
-.vbta-suggestion:hover,
-.vbta-suggestion:focus {
+//.vbta-suggestion:hover,
+.vbta-suggestion:active {
   color: #ffffff;
   text-decoration: none;
   outline: 0;
@@ -262,6 +293,16 @@ export default {
   box-shadow: none;
   opacity: 1;
   background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);
+}
+.vbta-suggest:after {
+    position: absolute;
+    display: inline-block;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid;
+    border-left: 7px solid transparent;
+    border-bottom-color: #f0f0f0;
+    content: '';
+    z-index: 9;
 }
 .vbta-hint.visible{
   display: inline-block;
