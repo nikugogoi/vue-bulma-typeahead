@@ -215,7 +215,7 @@ export default {
 @import "~bulma/sass/utilities/_all";
 //@import "~bulma/sass/elements/form.sass";
 .suggestion-box {
-  max-height: 10rem;
+  max-height: 9.55rem;
   overflow: auto;
   @include overflow-touch;
 }
