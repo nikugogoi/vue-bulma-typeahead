@@ -4,7 +4,7 @@
 
 > A simple Vue.js 2 Bulma CSS-styled component with a typeahead dropdown
 
-View the [demo](https://roseware.github.io/vue-bulma-typeahead/).
+View the [demo](https://rosendin.github.io/vue-bulma-typeahead/).
 
 ## Installation
 
@@ -26,6 +26,7 @@ npm install vue-bulma-typeahead --save
 |limit|Number|False|5|Max number of suggestions to show in dropdown.|
 |name|String|False|N/A|Name of the typeahead.|
 |async|Boolean|False|True|Whether to debounce the suggestions or not.|
+|placeholder|String|False|`""`|Placeholder value for input field|
 
 **Example**
 
