@@ -1,7 +1,18 @@
 <template>
   <span class="vbta">
-    <input :class="['input', 'vbta-hint', { visible: matches.length }]" type="text" :value="hint" :placeholder="placeholder" readonly>
-    <input v-model="query" class="input vbta-input" type="text" @keyup.delete="handleDelete($event)" @keydown.down.prevent="handleKeyDown($event)" @keydown.up.prevent="handleKeyUp" @keyup.enter.prevent.submit="emitSelect(matches[preselected])">
+    <input :class="['input', 'vbta-hint', { visible: matches.length && !selected }]" type="text" :value="hint" readonly>
+    <input 
+      v-model="query" 
+      class="input vbta-input" 
+      type="text"
+      @focus="$emit('hocus')"
+      @keyup.delete="handleDelete($event)"
+      @keydown.down.prevent="handleKeyDown($event)" 
+      @keydown.up.prevent="handleKeyUp" 
+      @keyup.enter.prevent.submit="emitSelect(matches[preselected])"
+      :class="{'is-danger': error}"
+      @focusout="outfocus.input='why'"
+    >
     <div :class="['vbta-menu', { visible: matches.length && !selected }]">
       <ul>
         <li v-for="match in matches" class="vbta-suggestion" @click="emitSelect(match)">
@@ -45,6 +56,15 @@ export default {
       default: true,
       required: false
     },
+    error: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    prefill: {
+      default: null,
+      required: false
+    },
     placeholder: {
       type: String,
       default() { return '' },
@@ -57,18 +77,39 @@ export default {
       matches: [],
       hint: '',
       selected: false,
+      is_first: false,
+      outfocus:{
+        input: false,
+        suggestion: false
+      },
       firstTouch: true,
       preselected: 0
     }
   },
   watch: {
-    query: function (value) {
-      if (this.async) {
-        debounce(this.getMatches, 150)(value)
-      } else {
-        this.getMatches(value)
+    outfocus:{
+      handler: function(n){
+        /*if(n.input==true&&n.suggestion==true)
+          this.selected=true*/
+        //n.input=n.suggestion=false
       }
-      this.onChange(value, this.name)
+    },
+    prefill: function(){
+      if(this.prefill!=null)
+        this.query=this.prefill  
+    },
+    query: function (value) {
+      if(value=="")
+        this.is_first=true
+      if(this.is_first==true)  
+      {  if (this.async) {
+          debounce(this.getMatches, 150)(value)
+        } else {
+          this.getMatches(value)
+        }
+        this.onChange(value, this.name)
+      }
+      this.is_first=true
     }
   },
   methods: {
@@ -104,6 +145,7 @@ export default {
       }
     },
     emitSelect (value) {
+      //console.log("emiting")
       value = value.replace(/<[\/]?strong>/gm, '')
       this.selected = true
       this.query = value
@@ -161,6 +203,7 @@ export default {
 
 .vbta-input {
   background-color: transparent;
+  box-shadow: none;
 }
 
 .vbta-menu.visible {
@@ -197,7 +240,7 @@ export default {
   font-weight: normal;
   line-height: 1.42857143;
   color: #333333;
-  white-space: nowrap;
+  /*white-space: nowrap;*/
 }
 
 .vbta-suggestion:hover,
@@ -212,11 +255,15 @@ export default {
 .vbta-hint {
   color: #999;
   position: absolute;
+  display: none;
   top: 0px;
   left: 0px;
   border-color: transparent;
   box-shadow: none;
   opacity: 1;
   background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);
+}
+.vbta-hint.visible{
+  display: inline-block;
 }
 </style>
