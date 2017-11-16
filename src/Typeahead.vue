@@ -6,7 +6,10 @@
       class="input vbta-input" 
       type="text"
       @focus="$emit('hocus')"
-      @keyup.delete="selected = false" 
+      @keyup.delete="handleDelete($event)"
+      @keydown.down.prevent="handleKeyDown($event)" 
+      @keydown.up.prevent="handleKeyUp" 
+      @keyup.enter.prevent.submit="emitSelect(matches[preselected])"
       :class="{'is-danger': error}"
       @focusout="outfocus.input='why'"
     >
@@ -61,6 +64,11 @@ export default {
     prefill: {
       default: null,
       required: false
+    },
+    placeholder: {
+      type: String,
+      default() { return '' },
+      required: false
     }
   },
   data () {
@@ -73,7 +81,9 @@ export default {
       outfocus:{
         input: false,
         suggestion: false
-      }
+      },
+      firstTouch: true,
+      preselected: 0
     }
   },
   watch: {
@@ -103,6 +113,37 @@ export default {
     }
   },
   methods: {
+    handleDelete () {
+      this.selected = false
+      this.preselected = 0
+      this.firstTouch = true
+    },
+    handleKeyUp () {
+      if (this.matches && this.preselected != 0) {
+        this.preselected--
+        let el = $('.vbta-suggestion').get(this.preselected)
+        $(el).css('background-color', '#00d1b2')
+
+        let prev = $('.vbta-suggestion').get(this.preselected + 1)
+        $(prev).css('background-color', '#ffffff')
+      }
+    },
+    handleKeyDown () {
+      if (this.matches && this.preselected != this.matches.length - 1) {
+        if (!this.firstTouch) {
+          this.preselected++
+        } else {
+          this.firstTouch = false
+        }
+        let el = $('.vbta-suggestion').get(this.preselected)
+        $(el).css('background-color', '#00d1b2')
+
+        if (this.preselected != 0) {
+          let prev = $('.vbta-suggestion').get(this.preselected - 1)
+          $(prev).css('background-color', '#ffffff')
+        }
+      }
+    },
     emitSelect (value) {
       //console.log("emiting")
       value = value.replace(/<[\/]?strong>/gm, '')
