@@ -11,8 +11,8 @@
       @keydown.down.prevent="handleKeyDown($event)" 
       @keydown.up.prevent="handleKeyUp" 
       @keyup.enter.prevent.submit="emitSelect(matches[preselected])"
-      :class="{'is-danger': error}"
-      @focusout="outfocus.input='why'"
+      :class="{'is-danger' : error}"
+      @focusout="$emit('outFocus')"
     >
     <div :class="['vbta-menu', { visible: matches.length && !selected }]" class="suggestion-box"> 
         <ul>
@@ -116,6 +116,7 @@ export default {
       }
       else
       { this.getMatches("")
+        this.$emit('hideSuggestion',true)
         this.onChange(value, this.name)
       }
       this.is_first=true
@@ -201,6 +202,10 @@ export default {
             this.hint = ''
           }
         })
+        if(matches.length==0||this.selected)
+          this.$emit('hideSuggestion',true)
+        else
+          this.$emit('hideSuggestion',false)
         this.matches = matches
       } else {
         this.hint = ''
@@ -216,10 +221,12 @@ export default {
 //@import "~bulma/sass/elements/form.sass";
 .suggestion-box {
   max-height: 9.55rem;
-  overflow: auto;
-  @include overflow-touch;
+  overflow: scroll;
+  //@include overflow-touch;
+  -webkit-overflow-scrolling: none;
 }
 .suggestion-box::-webkit-scrollbar {
+    -webkit-appearance: none;
     display: block;
     width: 5px;
 }
