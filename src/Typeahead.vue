@@ -228,16 +228,21 @@ export default {
 .suggestion-box::-webkit-scrollbar {
     -webkit-appearance: none;
     display: block;
-    width: 5px;
+    width: 8px;
 }
 .suggestion-box::-webkit-scrollbar-thumb {
-    background: $dark;
-    border-radius: 20%;
+    background: $grey-light;
+    border-radius: 10%;
+    height: 30px
 }
 .vbta {
   width: 100%;
   position: relative;
   display: inline-block;
+  .tooltip
+  {
+    position: absolute;
+  }
 }
 
 .vbta-input {
@@ -259,11 +264,11 @@ export default {
   float: right;
   min-width: 160px;
   padding: 5px 0;
-  margin: 5px 0 0;
+  margin: 6px 0 0;
   list-style: none;
   font-size: 14px;
   text-align: left;
-  background-color: #f0f0f0;
+  background-color: #fff;
   border: 1px solid #cccccc;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 4px;
@@ -301,15 +306,21 @@ export default {
   opacity: 1;
   background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);
 }
-.vbta-suggest:after {
+.vbta-suggest:after, .vbta-suggest:before{
     position: absolute;
     display: inline-block;
     border-right: 7px solid transparent;
     border-bottom: 7px solid;
     border-left: 7px solid transparent;
-    border-bottom-color: #f0f0f0;
+    border-bottom-color: #fff;
     content: '';
     z-index: 9;
+    right: 50%;
+    bottom: -8px;
+}
+.vbta-suggest:before{
+  bottom : -6px;
+  border-bottom-color: rgba(0, 0, 0, 0.15);
 }
 .vbta-hint.visible{
   display: inline-block;
