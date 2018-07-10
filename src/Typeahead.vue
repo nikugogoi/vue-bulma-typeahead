@@ -1,10 +1,10 @@
 <template>
-  <span class="vbta" :class="{'vbta-suggest': matches.length && !selected}">
-    <input :class="['input', 'vbta-hint', { visible: matches.length && !selected }]" type="text" :value="hint" readonly>
-    </input>
+  <span class="vbta group-login is-marginless" :class="{'vbta-suggest': matches.length && !selected}">
+    <input :class="['inputMaterial is-size-7', 'vbta-hint', { visible: matches.length && !selected }]" type="text" :value="hint" readonly>
     <input 
       v-model="query" 
-      class="input vbta-input" 
+      required
+      class="inputMaterial vbta-input is-size-7" 
       type="text"
       @focus="$emit('hocus')"
       @keyup.delete="handleDelete($event)"
@@ -21,6 +21,9 @@
           </li>
         </ul>
     </div>
+    <span class="highlight"></span>
+    <span class="bar"></span>
+    <label>{{placeholder}}</label>
   </span>
 </template>
 
@@ -304,7 +307,7 @@ export default {
   border-color: transparent;
   box-shadow: none;
   opacity: 1;
-  background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);
+  // background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);
 }
 .vbta-suggest:after, .vbta-suggest:before{
     position: absolute;
