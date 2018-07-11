@@ -301,7 +301,7 @@ export default {
 .vbta-hint {
   color: #999;
   position: absolute;
-  display: none;
+  display: none !important;
   top: 0px;
   left: 0px;
   border-color: transparent;
