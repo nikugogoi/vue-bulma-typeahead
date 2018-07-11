@@ -1,10 +1,10 @@
 <template>
   <span class="vbta group-login is-marginless" :class="{'vbta-suggest': matches.length && !selected}">
-    <input :class="['inputMaterial is-size-7', 'vbta-hint', { visible: matches.length && !selected }]" type="text" :value="hint" readonly>
+    <input :class="['inputMaterial', 'vbta-hint', { visible: matches.length && !selected }]" type="text" :value="hint" readonly>
     <input 
       v-model="query" 
       required
-      class="inputMaterial vbta-input is-size-7" 
+      class="inputMaterial vbta-input" 
       type="text"
       @focus="$emit('hocus')"
       @keyup.delete="handleDelete($event)"
