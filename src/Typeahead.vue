@@ -17,7 +17,10 @@
     <div :class="['vbta-menu', { visible: matches.length && !selected }]" class="suggestion-box"> 
         <ul>
           <li v-for="match in matches" class="vbta-suggestion" @click="emitSelect(match)">
-            <span v-html="match"></span>
+            <figure ref="imageContainer" class="image is-64x64">
+              <img :src="match.img_url" />
+            </figure>
+            <p class="has-text-centered" v-html="match.name"></p>
           </li>
         </ul>
     </div>
@@ -134,10 +137,12 @@ export default {
     handleKeyUp () {
       if (this.matches && this.preselected != 0) {
         this.preselected--
-        let el = document.getElementsByClassName("vbta-suggestion")[this.preselected]
-        el.style['background-color'] = '#00d1b2'
-        let prev = document.getElementsByClassName("vbta-suggestion")[this.preselected + 1]
-        prev.style['background-color'] = '#ffffff'
+        // let el = document.getElementsByClassName("vbta-suggestion")[this.preselected]
+        let el = this.$refs.imageContainer[this.preselected]
+        el.style['border-color'] = '#ff3860'
+        // let prev = document.getElementsByClassName("vbta-suggestion")[this.preselected + 1]
+        let prev = this.$refs.imageContainer[this.preselected + 1]
+        prev.style['border-color'] = 'transparent'
         /*let el = $('.vbta-suggestion').get(this.preselected)
         $(el).css('background-color', '#00d1b2')
         
@@ -146,18 +151,21 @@ export default {
       }
     },
     handleKeyDown () {
-
       if (this.matches && this.preselected != this.matches.length - 1) {
+        console.log('rr')
         if (!this.firstTouch) {
+          console.log('ss')
           this.preselected++
         } else {
           this.firstTouch = false
         }
-        let el = document.getElementsByClassName("vbta-suggestion")[this.preselected]
-        el.style['background-color'] = '#00d1b2'
+        // let el = document.getElementsByClassName("vbta-suggestion")[this.preselected]
+        let el = this.$refs.imageContainer[this.preselected]
+        el.style['border-color'] = '#ff3860'
         if (this.preselected != 0) {
-          let prev = document.getElementsByClassName("vbta-suggestion")[this.preselected - 1]
-          prev.style['background-color'] = '#ffffff'
+          // let prev = document.getElementsByClassName("vbta-suggestion")[this.preselected - 1]
+          let prev = this.$refs.imageContainer[this.preselected - 1]
+          prev.style['border-color'] = 'transparent'
         }
         /*let el = $('.vbta-suggestion').get(this.preselected)
         $(el).css('background-color', '#00d1b2')
@@ -168,36 +176,39 @@ export default {
         }*/
       }
     },
-    emitSelect (value) {
+    emitSelect ({name}) {
       //console.log("emiting")
-      value = value.replace(/<[\/]?strong>/gm, '')
+      name = name.replace(/<[\/]?strong>/gm, '')
       this.selected = true
-      this.query = value
-      this.onSelect(value, this.name)
+      this.query = name
+      this.onSelect(name, this.name)
     },
     getMatches (query) {
       if (query) {
         let matches = []
         let regex = new RegExp(query, 'i')
         let isMatch = false
-        this.source.forEach(value => {
-          if (typeof value !== 'string') new TypeError(`Typeahead sources must be string. Received ${typeof value}.`)
+        this.source.forEach(({images, name}) => {
+          // if (typeof value !== 'string') new TypeError(`Typeahead sources must be string. Received ${typeof value}.`)
           if (matches.length === this.limit) return
 
-          let regexProps = regex.exec(value)
+          let regexProps = regex.exec(name)
           if (regexProps) {
             isMatch = true
 
-            let substr1 = value.substring(0, regexProps.index)
-            let substr2 = `<strong>${value.slice(regexProps.index, regexProps.index + query.length)}</strong>`
-            let substr3 = value.substring(regexProps.index + query.length)
+            let substr1 = name.substring(0, regexProps.index)
+            let substr2 = `<strong>${name.slice(regexProps.index, regexProps.index + query.length)}</strong>`
+            let substr3 = name.substring(regexProps.index + query.length)
 
             let match = substr1 + substr2 + substr3
 
-            matches.push(match)
+            matches.push({
+              name : match,
+              img_url : images[0].url
+            })
 
             if (regexProps.index == 0) {
-              let hint = matches[0].replace(/<[\/]?strong>/gm, '').substring(query.length)
+              let hint = matches[0].name.replace(/<[\/]?strong>/gm, '').substring(query.length)
               if (hint !== this.hint) this.hint = query + hint
             }
           }
@@ -224,19 +235,22 @@ export default {
 //@import "~bulma/sass/elements/form.sass";
 .suggestion-box {
   max-height: 9.55rem;
-  overflow: scroll;
+  overflow-x: scroll;
   //@include overflow-touch;
   -webkit-overflow-scrolling: none;
+  ul {
+    white-space: nowrap;
+  }
 }
 .suggestion-box::-webkit-scrollbar {
     -webkit-appearance: none;
     display: block;
-    width: 8px;
+    height: 6px;
 }
 .suggestion-box::-webkit-scrollbar-thumb {
     background: $grey-light;
-    border-radius: 10%;
-    height: 30px
+    border-radius: 2.5px;
+    height: 6px
 }
 .vbta {
   width: 100%;
@@ -259,9 +273,9 @@ export default {
 
 .vbta-menu {
   position: absolute;
-  width: 160%;
+  width: calc(100vw - 2rem);
   top: 100%;
-  right: 0;
+  right: -3rem;
   z-index: 9;
   display: none;
   float: right;
@@ -271,7 +285,7 @@ export default {
   list-style: none;
   font-size: 14px;
   text-align: left;
-  background-color: #fff;
+  background-color: $grey-lighter;
   border: 1px solid #cccccc;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 4px;
@@ -280,13 +294,23 @@ export default {
   background-clip: padding-box;
 }
 .vbta-suggestion {
-  display: block;
+  display: inline-block;
   padding: 3px 20px;
   clear: both;
   font-weight: normal;
   line-height: 1.42857143;
   color: #333333;
   /*white-space: nowrap;*/
+  .image {
+    border-radius : 50%;
+    border : 1px solid transparent;
+    padding : .2rem;
+
+    img{
+      border-radius : 50%;
+      background: $white;
+    }
+  }
 }
 
 //.vbta-suggestion:hover,
@@ -315,7 +339,7 @@ export default {
     border-right: 7px solid transparent;
     border-bottom: 7px solid;
     border-left: 7px solid transparent;
-    border-bottom-color: #fff;
+    border-bottom-color:  $grey-lighter;
     content: '';
     z-index: 9;
     right: 50%;
