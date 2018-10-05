@@ -21,8 +21,8 @@
           </li>
         </ul>
     </div>
-    <span class="highlight"></span>
-    <span class="bar"></span>
+    <!-- <span class="highlight"></span>
+    <span class="bar"></span> -->
     <label>{{placeholder}}</label>
   </span>
 </template>
