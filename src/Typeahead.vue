@@ -259,7 +259,7 @@ export default {
 
 .vbta-menu {
   position: absolute;
-  width: 160%;
+  width: 75vw;
   top: 100%;
   right: 0;
   z-index: 9;
