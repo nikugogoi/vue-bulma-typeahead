@@ -10,13 +10,13 @@
       @keyup.delete="handleDelete($event)"
       @keydown.down.prevent="handleKeyDown($event)" 
       @keydown.up.prevent="handleKeyUp" 
-      @keyup.enter.prevent.submit="emitSelect(matches[preselected])"
+      @keyup.enter.prevent="emitSelect(matches[preselected])"
       :class="{'is-danger' : error}"
       @focusout="$emit('outFocus')"
     >
     <div :class="['vbta-menu', { visible: matches.length && !selected }]" class="suggestion-box"> 
         <ul>
-          <li v-for="match in matches" class="vbta-suggestion" @click="emitSelect(match)">
+          <li v-for="(match, index) in matches" :key="index" class="vbta-suggestion" @click="emitSelect(match)">
             <span v-html="match"></span>
           </li>
         </ul>
@@ -102,9 +102,12 @@ export default {
         //n.input=n.suggestion=false
       }
     },
-    prefill: function(){
-      if(this.prefill!=null)
-        this.query=this.prefill  
+    prefill: {
+      immediate : true,
+      handler(){
+        if(this.prefill!=null)
+          this.query=this.prefill
+      }
     },
     query: function (value) {
       if(value=="")
